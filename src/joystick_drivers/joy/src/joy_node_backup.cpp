@@ -47,7 +47,6 @@
 #include <sensor_msgs/Joy.h>
 #include <sensor_msgs/JoyFeedbackArray.h>
 #include <geometry_msgs/Twist.h> //MS
-#include <std_msgs/Bool.h> // Bool MS
 
 
 int closedir_cb(DIR *dir)
@@ -75,7 +74,6 @@ private:
   int event_count_;
   int pub_count_;
   ros::Publisher pub_;
-  ros::Publisher pubBool; // Bool MS
   double lastDiagTime_;
 
   int ff_fd_;
@@ -307,16 +305,15 @@ public:
 
     // Parameters
     ros::NodeHandle nh_param("~");
-    //pub_ = nh_.advertise<sensor_msgs::Joy>("joy", 1); // added to make 2nd pub.
+    pub_ = nh_.advertise<sensor_msgs::Joy>("joy", 1); // added to make 2nd pub.
     //pub_ = nh_.advertise<geometry_msgs::Twist>("twist", 1); //MS
     pub_ = nh_.advertise<geometry_msgs::Twist>("twist_joy", 1); //MS 2
-    pubBool = nh_.advertise<std_msgs::Bool>("au_priority", 1); // Bool MS
     ros::Subscriber sub = nh_.subscribe("joy/set_feedback", 10, &Joystick::set_feedback, this);
     nh_param.param<std::string>("dev", joy_dev_, "/dev/input/js0");
     nh_param.param<std::string>("dev_ff", joy_dev_ff_, "/dev/input/event0");
     nh_param.param<std::string>("dev_name", joy_dev_name_, "");
     nh_param.param<double>("deadzone", deadzone_, 0.05);
-    nh_param.param<double>("autorepeat_rate", autorepeat_rate_, 0); // standard 0
+    nh_param.param<double>("autorepeat_rate", autorepeat_rate_, 1); // standard 0
     nh_param.param<double>("coalesce_interval", coalesce_interval_, 0.001);
     nh_param.param<bool>("default_trig_val", default_trig_val_, false);
     nh_param.param<bool>("sticky_buttons", sticky_buttons_, false);
@@ -478,8 +475,6 @@ public:
       sensor_msgs::Joy joy_msg;  // Here because we want to reset it on device close.
       //geometry_msgs::Twist twist_msg; //MS
       geometry_msgs::Twist twist_joy_msg; //MS 2
-      //std_msgs::Bool au_priority_msg=false; // Bool MS
-      bool au_priority_msg=false; // Bool MS
       double val;  // Temporary variable to hold event values
       while (nh_.ok())
       {
@@ -640,18 +635,10 @@ public:
           twist_joy_msg.linear.x = joy_msg.axes[1]; // MS 2
           //twist_msg.angular.z = joy_msg.axes[0];// MS
           twist_joy_msg.angular.z = joy_msg.axes[0];// MS 2
-          twist_joy_msg.angular.y = joy_msg.axes[5];// MS 2
-          //au_priority_msg = true; // joy_msg.buttons[1]; // Bool MS      
-          if (joy_msg.axes[2]>0) {
-          	au_priority_msg = true;
-          }	else {
-          	au_priority_msg = false;
-          }
           //pub_.publish(twist_msg); //MS
           pub_.publish(twist_joy_msg); //MS 2
-          //pub_.publish(joy_msg); // added to make 2nd pub.
-	  pubBool.publish(au_priority_msg); // Bool MS
-	  
+          pub_.publish(joy_msg); // added to make 2nd pub.
+
           publish_now = false;
           tv_set = false;
           publication_pending = false;
