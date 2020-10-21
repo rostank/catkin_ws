@@ -316,7 +316,7 @@ public:
     nh_param.param<std::string>("dev_ff", joy_dev_ff_, "/dev/input/event0");
     nh_param.param<std::string>("dev_name", joy_dev_name_, "");
     nh_param.param<double>("deadzone", deadzone_, 0.05);
-    nh_param.param<double>("autorepeat_rate", autorepeat_rate_, 0); // standard 0
+    nh_param.param<double>("autorepeat_rate", autorepeat_rate_, 1); // default 0
     nh_param.param<double>("coalesce_interval", coalesce_interval_, 0.001);
     nh_param.param<bool>("default_trig_val", default_trig_val_, false);
     nh_param.param<bool>("sticky_buttons", sticky_buttons_, false);
