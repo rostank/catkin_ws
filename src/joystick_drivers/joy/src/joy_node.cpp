@@ -637,9 +637,9 @@ public:
           joy_msg.header.stamp = ros::Time().now();
           joy_msg.header.frame_id = joy_dev_.c_str();
           //twist_msg.linear.x = joy_msg.axes[1]; // MS
-          twist_joy_msg.linear.x = joy_msg.axes[1]; // MS 2
+          twist_joy_msg.linear.x = joy_msg.axes[1]*0.5; // MS 2
           //twist_msg.angular.z = joy_msg.axes[0];// MS
-          twist_joy_msg.angular.z = joy_msg.axes[0];// MS 2
+          twist_joy_msg.angular.z = joy_msg.axes[0]*1;// MS 2
           twist_joy_msg.angular.y = joy_msg.axes[5];// MS 2
           //au_priority_msg = true; // joy_msg.buttons[1]; // Bool MS      
           if (joy_msg.axes[2]>0) {
